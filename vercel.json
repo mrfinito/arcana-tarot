@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/tarot-reading.js": {
+      "maxDuration": 60
+    }
+  }
+}
