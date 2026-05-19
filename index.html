@@ -264,6 +264,357 @@
 
   .hidden { display: none; }
   .scroll-target { scroll-margin-top: 20px; }
+
+  /* ============ SMACZKI: scroll-reveal ============ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* Stagger delays */
+  .reveal.delay-1 { transition-delay: 0.08s; }
+  .reveal.delay-2 { transition-delay: 0.16s; }
+  .reveal.delay-3 { transition-delay: 0.24s; }
+  .reveal.delay-4 { transition-delay: 0.32s; }
+
+  /* ============ TILT 3D na karty galerii ============ */
+  .arcana-tile {
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .arcana-tile .art {
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .arcana-tile:hover .art {
+    transform: scale(1.05);
+  }
+  .arcana-tile .shine {
+    position: absolute; inset: 0;
+    background: linear-gradient(105deg,
+      transparent 30%,
+      rgba(232, 197, 71, 0.15) 45%,
+      rgba(255, 230, 150, 0.25) 50%,
+      rgba(232, 197, 71, 0.15) 55%,
+      transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    z-index: 3;
+    mix-blend-mode: screen;
+  }
+  .arcana-tile:hover .shine {
+    transform: translateX(120%);
+  }
+
+  /* ============ Pulsujące przyciski primary ============ */
+  .btn-primary {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(105deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.7s;
+    pointer-events: none;
+  }
+  .btn-primary:hover::after {
+    transform: translateX(120%);
+  }
+
+  /* ============ Karty losowane: tilt 3D + stagger reveal ============ */
+  .tarot-card {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    will-change: transform;
+  }
+  .tarot-card.card-enter {
+    animation: cardEnter 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes cardEnter {
+    from { opacity: 0; transform: translateY(40px) scale(0.85) rotateZ(-3deg); }
+    to { opacity: 1; transform: translateY(0) scale(1) rotateZ(0); }
+  }
+  .tarot-card.card-enter:nth-child(1) { animation-delay: 0s; }
+  .tarot-card.card-enter:nth-child(2) { animation-delay: 0.08s; }
+  .tarot-card.card-enter:nth-child(3) { animation-delay: 0.16s; }
+  .tarot-card.card-enter:nth-child(4) { animation-delay: 0.24s; }
+  .tarot-card.card-enter:nth-child(5) { animation-delay: 0.32s; }
+  .tarot-card.card-enter:nth-child(n+6) { animation-delay: 0.4s; }
+
+  /* Flip animation rotateY */
+  .tarot-card {
+    transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1), box-shadow 0.4s;
+  }
+  .tarot-card.flipping {
+    animation: cardFlip 0.8s cubic-bezier(0.65, 0, 0.35, 1) both;
+  }
+  @keyframes cardFlip {
+    0% { transform: rotateY(0) scale(1); }
+    50% { transform: rotateY(90deg) scale(1.05); }
+    100% { transform: rotateY(0) scale(1); }
+  }
+
+  /* Glow na hover karty losowanej */
+  .tarot-card.flipped:hover {
+    box-shadow: 0 0 0 1.5px var(--gold), 0 12px 40px rgba(232, 197, 71, 0.3), 0 0 60px rgba(232, 197, 71, 0.2);
+  }
+
+  /* ============ Shuffling animation ============ */
+  .shuffle-stage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 320px;
+    perspective: 1000px;
+    position: relative;
+    margin: 40px 0;
+  }
+  .shuffle-card {
+    position: absolute;
+    width: 140px;
+    height: 210px;
+    background: linear-gradient(135deg, var(--bg-mid) 0%, var(--bg-deep) 100%);
+    border: 1.5px solid var(--gold);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold);
+    font-size: 32px;
+    font-family: 'Cormorant Garamond', serif;
+    animation: shuffleAnim 1.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+  @keyframes shuffleAnim {
+    0% { transform: translateX(-80px) translateY(0) rotateZ(-15deg); opacity: 0; }
+    20% { opacity: 1; }
+    50% { transform: translateX(0) translateY(-20px) rotateZ(0); }
+    80% { opacity: 1; }
+    100% { transform: translateX(80px) translateY(0) rotateZ(15deg); opacity: 0; }
+  }
+  .shuffle-card:nth-child(1) { animation-delay: 0s; }
+  .shuffle-card:nth-child(2) { animation-delay: 0.15s; }
+  .shuffle-card:nth-child(3) { animation-delay: 0.3s; }
+  .shuffle-card:nth-child(4) { animation-delay: 0.45s; }
+  .shuffle-card:nth-child(5) { animation-delay: 0.6s; }
+
+  /* ============ MODAL z opisem karty ============ */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10, 6, 30, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s, visibility 0.4s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-y: auto;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  .modal-card {
+    background: linear-gradient(180deg, #221858 0%, #1A1340 100%);
+    border: 1px solid var(--border-active);
+    border-radius: 24px;
+    max-width: 920px;
+    width: 100%;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(232, 197, 71, 0.3), 0 0 60px rgba(232, 197, 71, 0.15);
+    transform: scale(0.92) translateY(20px);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+  }
+  .modal-overlay.open .modal-card {
+    transform: scale(1) translateY(0);
+  }
+  .modal-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0;
+  }
+  .modal-art-side {
+    background: linear-gradient(180deg, #0F0A2D 0%, #1A1340 100%);
+    padding: 32px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    border-right: 1px solid var(--border-soft);
+  }
+  .modal-art-img {
+    width: 100%;
+    aspect-ratio: 2/3;
+    background-size: cover; background-position: center;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-soft);
+  }
+  .modal-art-roman {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    color: var(--gold);
+    letter-spacing: 4px;
+  }
+  .modal-art-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    line-height: 1.1;
+  }
+  .modal-art-keywords {
+    font-size: 11px;
+    color: var(--gold-soft);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .modal-content-side {
+    padding: 36px 40px;
+    overflow-y: auto;
+  }
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    width: 40px; height: 40px;
+    background: rgba(15, 10, 45, 0.7);
+    border: 1px solid var(--border-soft);
+    border-radius: 50%;
+    color: var(--gold);
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-close:hover {
+    background: var(--gold);
+    color: #1A1340;
+    transform: rotate(90deg);
+  }
+  .modal-section {
+    margin-bottom: 24px;
+  }
+  .modal-section:last-child { margin-bottom: 0; }
+  .modal-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .modal-text {
+    color: var(--text-primary);
+    font-size: 14.5px;
+    line-height: 1.75;
+    font-weight: 300;
+  }
+  .modal-text em {
+    color: var(--gold);
+    font-style: italic;
+  }
+  .modal-question {
+    background: rgba(232, 197, 71, 0.05);
+    border-left: 2px solid var(--gold);
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--gold);
+  }
+  .modal-question-label {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-size: 10px;
+    color: var(--gold-soft);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .modal-tip {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-soft);
+    text-align: center;
+    font-style: italic;
+  }
+
+  @media (max-width: 720px) {
+    .modal-grid { grid-template-columns: 1fr; }
+    .modal-art-side { padding: 24px; border-right: none; border-bottom: 1px solid var(--border-soft); flex-direction: row; align-items: center; gap: 20px; }
+    .modal-art-img { width: 120px; flex-shrink: 0; }
+    .modal-art-name { text-align: left; font-size: 22px; }
+    .modal-art-keywords, .modal-art-roman { text-align: left; }
+    .modal-content-side { padding: 24px 22px; }
+    .modal-card { max-height: calc(100vh - 32px); }
+  }
+
+  /* Tile hover hint "kliknij" */
+  .arcana-tile::after {
+    content: 'kliknij, by poznać';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) translateY(20px);
+    background: rgba(15, 10, 45, 0.92);
+    color: var(--gold);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border-active);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    z-index: 4;
+    white-space: nowrap;
+  }
+  .arcana-tile:hover::after {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateY(0);
+  }
+
+  /* Smooth scroll behavior */
+  html { scroll-behavior: smooth; }
+
+  /* Reduced motion respect */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .reveal { opacity: 1; transform: none; }
+  }
+
+  /* Subtelny floating na trust items */
+  .trust-item {
+    transition: transform 0.3s, color 0.3s;
+  }
+  .trust-item:hover {
+    transform: translateY(-2px);
+    color: var(--gold);
+  }
 </style>
 </head>
 <body>
@@ -471,6 +822,164 @@ document.querySelectorAll('.faq-item').forEach(item => {
   item.addEventListener('click', () => item.classList.toggle('open'));
 });
 
+// Głębsze opisy do modalu (po kliknięciu na kartę w galerii)
+const cardDeep = {
+  '0': {
+    archetype: 'Niewinność, święty głupiec, pielgrzym',
+    classical: 'Młodzieniec na krawędzi przepaści, biały pies u nóg, biała róża w dłoni, słońce nad głową. Jeden krok i albo lot, albo upadek.',
+    psychological: 'Punkt zero indywiduacji. Moment przed wszystkim. Decyzja niewytłumaczalna logicznie — wewnętrzny imperatyw mówiący „musisz iść".',
+    somatic: 'Lekkość w klatce piersiowej, motyle w brzuchu, ale też strach na karku — to ten rodzaj napięcia, które rodzi się, gdy ciało wie więcej niż umysł.',
+    question: 'Co byłbyś gotów stracić, żeby zacząć od nowa?'
+  },
+  'I': {
+    archetype: 'Twórca, alchemik, hermes',
+    classical: 'Mag z różdżką wzniesioną ku niebu, drugą ręką wskazujący ziemię. Na stole cztery żywioły: puchar, miecz, denar, buława. Nieskończoność nad głową.',
+    psychological: 'Moment, w którym wewnętrzne talenty stają się dostępne. Świadomość własnej sprawczości. Także: pokusa manipulacji, bo siła kusi do skrótów.',
+    somatic: 'Iskra w dłoniach, gorąco w skroniach. Energia, która sama szuka kanału, w którym popłynie.',
+    question: 'Czy używasz swojej mocy, czy tylko grasz, że ją masz?'
+  },
+  'II': {
+    archetype: 'Strażniczka tajemnicy, czarna Madonna, wewnętrzna wieszczka',
+    classical: 'Kobieta między dwoma kolumnami — czarną i białą, Boaz i Jachin. Na kolanach zwój Tory, na głowie korona księżyca. Za nią welon haftowany w granaty.',
+    psychological: 'Wiedza, do której nie ma się dostępu rozumem. Sny, intuicja, dolny mózg. Cykliczność kobieca, archetyp Animy. Sprawa, którą zna się ciałem, a nie głową.',
+    somatic: 'Cisza w środku brzucha. To miejsce, gdzie wiemy, ale nie umiemy powiedzieć.',
+    question: 'Co już wiesz, mimo że jeszcze sobie tego nie powiedziałaś?'
+  },
+  'III': {
+    archetype: 'Matka, Demeter, ziemia rodząca',
+    classical: 'Kobieta na tronie w pszennym polu, w koronie z dwunastu gwiazd, berło z planety Wenus, suknia w granaty. Cypr i las za nią.',
+    psychological: 'Twórczość, płodność — dosłowna i symboliczna (pomysł, projekt, dziecko, książka). Zdolność rodzenia, ale i zdrowego dawania bez pochłaniania.',
+    somatic: 'Ciepło w podbrzuszu, miękkość w ramionach, pełnia w klatce piersiowej. Ciało gotowe do dawania.',
+    question: 'Co chce się przez Ciebie zrodzić, czego jeszcze nie wpuściłaś do świadomości?'
+  },
+  'IV': {
+    archetype: 'Ojciec, struktura, prawodawca',
+    classical: 'Władca na tronie z głowami baranów, w zbroi pod purpurową szatą, berło-ankh w dłoni. Góry skaliste za plecami.',
+    psychological: 'Zdrowa męska zasada: porządek, granice, odpowiedzialność. Animus dojrzały. Także: ojciec wewnętrzny, ten, który strukturyzuje życie.',
+    somatic: 'Stabilność w stopach, prosty kręgosłup, oddech głęboki i miarowy. Postawa, która nie potrzebuje udowadniać.',
+    question: 'Gdzie potrzebujesz większej struktury, a gdzie jest jej za dużo?'
+  },
+  'V': {
+    archetype: 'Nauczyciel, kapłan, strażnik tradycji',
+    classical: 'Postać w potrójnej tiarze, dwóch klęczących uczniów u stóp, dwa skrzyżowane klucze, dłoń uniesiona w geście błogosławieństwa.',
+    psychological: 'Konieczność określenia się wobec tradycji — religii, rodziny, kanonu, autorytetu. Pytanie o własną duchowość. Także: nauczyciel zewnętrzny, mentor.',
+    somatic: 'Sztywność w karku, jakby coś trzymało Cię w pozycji, której nie wybierałaś.',
+    question: 'Czyje przekonania nosisz jako swoje?'
+  },
+  'VI': {
+    archetype: 'Wybór, miłość, integracja przeciwieństw',
+    classical: 'Mężczyzna i kobieta nadzy pod aniołem Rafaelem, drzewo wiedzy z wężem za nią, drzewo życia z płomieniami za nim. Słońce nad wszystkim.',
+    psychological: 'Pierwszy świadomy wybór wartości. Połączenie z drugą osobą, która lustruje to, co w Tobie. Nie tylko o miłości — o każdej relacji, która wymaga decyzji „tak" lub „nie".',
+    somatic: 'Otwartość w klatce piersiowej, ale też niepokój — bo wybór zawsze coś kosztuje.',
+    question: 'Czy wybierasz z miłości, czy z lęku przed samotnością?'
+  },
+  'VII': {
+    archetype: 'Wola, zwycięstwo, triumf',
+    classical: 'Wojownik w rydwanie ciągniętym przez czarnego i białego sfinksa. Korona z gwiazdą, zbroja z księżycami, baldachim w gwiazdy.',
+    psychological: 'Zwycięstwo przez świadome utrzymywanie kierunku mimo przeciwnych sił wewnętrznych. Zdolność trzymania razem sprzeczności i jednak iść.',
+    somatic: 'Skupienie w środku piersi, napięcie w ramionach jak u kogoś, kto trzyma lejce. Adrenalina zdrowa, nie panika.',
+    question: 'Czy wiesz dokąd jedziesz, czy tylko jedziesz szybko?'
+  },
+  'VIII': {
+    archetype: 'Odwaga wewnętrzna, oswajanie cienia',
+    classical: 'Kobieta delikatnie zamykająca paszczę lwa. Nad głową lemniskata. Wieniec z kwiatów.',
+    psychological: 'Siła, która nie dominuje, tylko oswaja. Czułość wobec własnego zwierzęcia wewnętrznego — pożądania, gniewu, instynktu. Praca z cieniem przez akceptację, nie walkę.',
+    somatic: 'Spokojny oddech mimo bliskości tego, co dzikie. Miękkość, która ma dno.',
+    question: 'Czego w sobie jeszcze nie pogłaskałaś?'
+  },
+  'IX': {
+    archetype: 'Mędrzec, samotnik, ten kto wie',
+    classical: 'Stary mężczyzna z latarnią, w której świeci sześcioramienna gwiazda. Sam na szczycie góry, owinięty szarym płaszczem.',
+    psychological: 'Konieczność wycofania się z hałasu, żeby usłyszeć siebie. Czas samotności nie jako kary, ale jako warunku poznania. Także: spotkanie ze starym mędrcem w sobie.',
+    somatic: 'Cisza w skroniach, oddech wolny, ciało które przestaje gonić.',
+    question: 'Co usłyszysz, kiedy wreszcie zaczniesz milczeć?'
+  },
+  'X': {
+    archetype: 'Cykl, los, koło istnienia',
+    classical: 'Wielkie koło z literami TARO/ROTA, w rogach cztery istoty (anioł, orzeł, lew, wół), na kole anubis i tyfon, na szczycie sfinks z mieczem.',
+    psychological: 'Punkt zwrotny, w którym los gra Twoją kartą bez pytania o zgodę. Nieosobowa siła zmiany. Coś się kończy i coś zaczyna jednocześnie.',
+    somatic: 'Zawrót głowy, lekkie drżenie. Ciało wie, że grunt się rusza.',
+    question: 'Czy próbujesz zatrzymać koło, czy uczysz się jechać razem z nim?'
+  },
+  'XI': {
+    archetype: 'Prawda, równowaga, karma',
+    classical: 'Postać na tronie z mieczem wzniesionym pionowo i wagą w drugiej dłoni. Czerwona szata, korona z kwadratem, fioletowy welon za plecami.',
+    psychological: 'Konfrontacja z konsekwencjami własnych wyborów. Czas rozliczenia z samym sobą. Karma rozumiana jako prawo przyczyny i skutku, nie kara.',
+    somatic: 'Wyprostowanie kręgosłupa, czystość oddechu. To stan, gdy nie ma już co ukrywać.',
+    question: 'Czy jesteś gotów żyć z konsekwencjami tego, kim naprawdę jesteś?'
+  },
+  'XII': {
+    archetype: 'Poświęcenie, pauza, odwrócona perspektywa',
+    classical: 'Mężczyzna zawieszony za jedną nogę na drzewie w kształcie T, druga noga założona, aureola wokół głowy.',
+    psychological: 'Świadome zatrzymanie się. Akceptacja, że nie wszystko da się rozwiązać działaniem. Czasem trzeba zawisnąć — żeby świat się obrócił, nie Ty. Inicjacja.',
+    somatic: 'Dziwna ulga w napięciu, jakby ciało zgodziło się przestać walczyć.',
+    question: 'Co zobaczysz, jeśli na chwilę przestaniesz coś z tym robić?'
+  },
+  'XIII': {
+    archetype: 'Transformacja, koniec rozdziału, śmierć symboliczna',
+    classical: 'Szkielet w czarnej zbroi na białym koniu, w dłoni czarna chorągiew z białą różą. Na ziemi król, dziecko, kobieta i biskup. W tle wschód słońca między dwiema wieżami.',
+    psychological: 'Coś musi umrzeć, żeby coś mogło się narodzić. Nie fizyczna śmierć — śmierć tożsamości, relacji, etapu, iluzji. Najtrudniejsza i najbardziej wyzwalająca karta tarota.',
+    somatic: 'Ciężar w piersi, ale też dziwny spokój. Ciało wie, że trzeba puścić.',
+    question: 'Czego trzymasz się, mimo że już dawno się skończyło?'
+  },
+  'XIV': {
+    archetype: 'Integracja, alchemia, anioł równowagi',
+    classical: 'Anioł z jedną nogą w wodzie, drugą na lądzie, przelewający wodę z jednego naczynia do drugiego. Na piersi trójkąt w kwadracie. Droga prowadząca do gór i korony.',
+    psychological: 'Świadoma praca nad łączeniem przeciwieństw w sobie. Ciało i duch, działanie i bierność, męskie i kobiece. To długi proces, nie błysk.',
+    somatic: 'Równy oddech, ciepło bez gorączki, chłód bez sztywności. Stan środka.',
+    question: 'Co próbujesz w sobie wymusić, zamiast zintegrować?'
+  },
+  'XV': {
+    archetype: 'Cień, uzależnienie, niewidzialne więzy',
+    classical: 'Rogata postać na piedestale, dwoje nagich ludzi przykutych łańcuchami — ale łańcuchy są luźne, mogliby je zdjąć. Pochodnia w odwróconej dłoni.',
+    psychological: 'Spotkanie z własnym cieniem — częścią, którą wypierasz, ale która rządzi Twoim życiem. Uzależnienia, kompulsje, schematy. Łańcuchy są luźne — ale wierzysz, że nie.',
+    somatic: 'Ciężar w żołądku, ciało napięte, jakby ktoś trzymał za gardło. Często towarzyszy temu wstyd.',
+    question: 'Czyje łańcuchy nosisz, w które nawet nikt cię nie zakuwał?'
+  },
+  'XVI': {
+    archetype: 'Kryzys, olśnienie, runięcie fałszywych konstrukcji',
+    classical: 'Wieża rażona piorunem, korona spadająca ze szczytu, dwie postaci wypadające z okien, płomienie. W tle ciemne niebo.',
+    psychological: 'Coś, co zbudowałeś na piasku, się rozpada — i to dobrze, choć boli. Iluzja, fałszywe ego, struktura nie do utrzymania. Wieża zawsze burzy to, co powinno paść.',
+    somatic: 'Szok, drżenie, czasem mdłości. Ciało wie, że ziemia się zatrzęsła, zanim umysł to przyzna.',
+    question: 'Co próbujesz utrzymać, choć już wiesz, że nie utrzyma się samo?'
+  },
+  'XVII': {
+    archetype: 'Nadzieja, odnowa, łaska',
+    classical: 'Naga kobieta klęcząca nad sadzawką, jedną stopą w wodzie, drugą na lądzie. Przelewa wodę z dwóch dzbanów. Nad nią siedem gwiazd, jedna wielka pośrodku.',
+    psychological: 'Po Wieży przychodzi Gwiazda. Cicha nadzieja po katastrofie. Odzyskane zaufanie, ale już nie naiwne — przeszło przez ogień. Łaska, którą trzeba przyjąć nago.',
+    somatic: 'Łzy bez bólu, otwarte gardło, lekkość. Ciało, które wreszcie odpoczywa.',
+    question: 'Czy potrafisz przyjąć dobro, nie próbując sobie wytłumaczyć skąd się wzięło?'
+  },
+  'XVIII': {
+    archetype: 'Sen, lęk, świat podświadomy',
+    classical: 'Pełnia księżyca między dwiema wieżami. Pies i wilk wyją w stronę księżyca, rak wychodzi z wody. Kropelki spadają z księżyca jak deszcz.',
+    psychological: 'Wejście w głąb własnej psychiki — sny, lęki, projekcje. Granica między tym co realne i tym co wyobrażone się zaciera. Czasem czas kryzysu psychicznego.',
+    somatic: 'Niepokój bez nazwy, sny intensywne, ciało reagujące na to, czego umysł nie nazwał.',
+    question: 'Czyje to są naprawdę lęki — Twoje czy odziedziczone?'
+  },
+  'XIX': {
+    archetype: 'Radość, witalność, pełnia',
+    classical: 'Nagie dziecko na białym koniu, z czerwonym sztandarem. Słonecznik za nim, mur, wielkie słońce z 12 promieniami.',
+    psychological: 'Świadomość, która wreszcie wyszła z cienia. Radość niewinna jak u dziecka, ale po przeprawie. Sukces nie tylko zewnętrzny — przede wszystkim wewnętrzny.',
+    somatic: 'Ciepło w klatce, uśmiech sam się robi, szybkość kroku.',
+    question: 'Czy potrafisz cieszyć się tak, żeby nie szukać już powodu, dla którego nie zasługujesz?'
+  },
+  'XX': {
+    archetype: 'Przebudzenie, powołanie, rozliczenie',
+    classical: 'Archanioł Gabriel trąbiący nad otwartymi grobami. Z grobów wstają nadzy ludzie z rękami wzniesionymi w geście „tak". Białe góry w tle.',
+    psychological: 'Wezwanie. Coś w Tobie się budzi i wie, że nie może już udawać, że nie słyszało. Rozliczenie się z dotychczasowym życiem. Drugie życie w pierwszym.',
+    somatic: 'Dreszcz, łzy bez powodu, uczucie że ktoś Cię woła po imieniu — choć nie wiesz kto.',
+    question: 'Czego Twoja dusza nie chce już udawać, że tego nie chce?'
+  },
+  'XXI': {
+    archetype: 'Spełnienie, integracja, koniec cyklu',
+    classical: 'Tańcząca naga postać w fioletowym welonie, dwie różdżki w dłoniach, w wieńcu laurowym. W rogach cztery istoty: anioł, orzeł, lew, wół.',
+    psychological: 'Pełnia po długiej podróży. Indywiduacja zakończona — przynajmniej w tym cyklu. Człowiek, który zintegrował cztery żywioły w sobie. Tańczy, bo wreszcie może.',
+    somatic: 'Pełnia w całym ciele, oddech głęboki, ruch lekki. Ciało wie, że dotarło.',
+    question: 'Co teraz, gdy się skończyło? Bo każde Świat to też nowy Głupiec.'
+  }
+};
+
 const majorArcana = [
   {n:'0', name:'Głupiec', symbol:'☉', keywords:'początek · wiara', up:'początek, spontaniczność, wiara', rev:'lekkomyślność, naiwność', img:'cards/00-fool.jpg'},
   {n:'I', name:'Mag', symbol:'∞', keywords:'sprawczość · talent', up:'manifestacja, sprawczość, talent', rev:'manipulacja, brak skupienia', img:'cards/01-magician.jpg'},
@@ -570,8 +1079,29 @@ document.querySelectorAll('.spread-card').forEach((card, idx) => {
 document.getElementById('draw-btn').addEventListener('click', () => {
   const shuffled = [...fullDeck].sort(() => Math.random() - 0.5);
   drawnCards = shuffled.slice(0, currentSpread).map(c => ({ ...c, reversed: Math.random() < 0.3 }));
-  renderReading();
+  showShuffleAnimation(() => renderReading());
 });
+
+function showShuffleAnimation(onDone) {
+  const area = document.getElementById('step-reading');
+  area.classList.remove('hidden');
+  document.getElementById('step-interpretation').classList.add('hidden');
+
+  area.innerHTML =
+    '<div class="reading-section">' +
+      '<div class="shuffle-stage">' +
+        '<div class="shuffle-card">✦</div>' +
+        '<div class="shuffle-card">☽</div>' +
+        '<div class="shuffle-card">★</div>' +
+        '<div class="shuffle-card">☉</div>' +
+        '<div class="shuffle-card">✦</div>' +
+      '</div>' +
+      '<p style="text-align: center; color: var(--gold); font-family: \'Cormorant Garamond\', serif; font-style: italic; font-size: 18px; margin-top: 16px;">Liwia tasuje karty...</p>' +
+    '</div>';
+
+  area.scrollIntoView({behavior: 'smooth', block: 'start'});
+  setTimeout(onDone, 1800);
+}
 
 function renderReading() {
   const positions = spreadPositions[currentSpread];
@@ -583,7 +1113,7 @@ function renderReading() {
   html += '<div class="cards-layout layout-' + currentSpread + '">';
   drawnCards.forEach((card, i) => {
     html += '<div class="card-wrap">';
-    html += '<div class="tarot-card" data-idx="' + i + '">';
+    html += '<div class="tarot-card card-enter" data-idx="' + i + '">';
     html += '<div class="card-front ' + (card.reversed ? 'reversed' : '') + '">';
     if (card.img) {
       html += '<div class="card-art" style="background-image: url(\'' + card.img + '\')"></div>';
@@ -609,11 +1139,28 @@ function renderReading() {
   area.scrollIntoView({behavior: 'smooth', block: 'start'});
 
   document.querySelectorAll('.tarot-card').forEach(c => {
-    c.addEventListener('click', () => c.classList.add('flipped'));
+    c.addEventListener('click', () => {
+      if (c.classList.contains('flipped')) return;
+      c.classList.add('flipping');
+      setTimeout(() => {
+        c.classList.add('flipped');
+        c.classList.remove('flipping');
+      }, 400);
+    });
   });
   document.getElementById('flip-all').addEventListener('click', () => {
-    document.querySelectorAll('.tarot-card').forEach(c => c.classList.add('flipped'));
-    showInterpretation();
+    const cards = document.querySelectorAll('.tarot-card');
+    cards.forEach((c, i) => {
+      setTimeout(() => {
+        if (c.classList.contains('flipped')) return;
+        c.classList.add('flipping');
+        setTimeout(() => {
+          c.classList.add('flipped');
+          c.classList.remove('flipping');
+        }, 400);
+      }, i * 120);
+    });
+    setTimeout(showInterpretation, cards.length * 120 + 500);
   });
 }
 
@@ -772,6 +1319,134 @@ async function startStreamingReading() {
     reading.innerHTML = '<div class="error">Wyrocznia milczy: ' + e.message + '. Spróbuj ponownie za chwilę.</div>';
   }
 }
+
+// ============ MODAL OPISÓW KART ============
+
+function openCardModal(romanKey) {
+  const card = majorArcana.find(c => c.n === romanKey);
+  const deep = cardDeep[romanKey];
+  if (!card || !deep) return;
+
+  const overlay = document.getElementById('card-modal');
+  const html =
+    '<button class="modal-close" id="modal-close-btn" aria-label="Zamknij">×</button>' +
+    '<div class="modal-grid">' +
+      '<div class="modal-art-side">' +
+        '<div class="modal-art-img" style="background-image: url(\'' + card.img + '\')"></div>' +
+        '<div class="modal-art-roman">' + card.n + '</div>' +
+        '<div class="modal-art-name">' + card.name + '</div>' +
+        '<div class="modal-art-keywords">' + card.keywords + '</div>' +
+      '</div>' +
+      '<div class="modal-content-side">' +
+        '<div class="modal-section">' +
+          '<div class="modal-label">Archetyp</div>' +
+          '<div class="modal-text">' + deep.archetype + '</div>' +
+        '</div>' +
+        '<div class="modal-section">' +
+          '<div class="modal-label">Symbolika klasyczna</div>' +
+          '<div class="modal-text">' + deep.classical + '</div>' +
+        '</div>' +
+        '<div class="modal-section">' +
+          '<div class="modal-label">Znaczenie psychologiczne</div>' +
+          '<div class="modal-text">' + deep.psychological + '</div>' +
+        '</div>' +
+        '<div class="modal-section">' +
+          '<div class="modal-label">W ciele</div>' +
+          '<div class="modal-text">' + deep.somatic + '</div>' +
+        '</div>' +
+        '<div class="modal-question">' +
+          '<span class="modal-question-label">Pytanie do refleksji</span>' +
+          deep.question +
+        '</div>' +
+        '<div class="modal-tip">Kliknij gdziekolwiek poza kartą, aby zamknąć</div>' +
+      '</div>' +
+    '</div>';
+
+  overlay.querySelector('.modal-card').innerHTML = html;
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Close handlers
+  document.getElementById('modal-close-btn').addEventListener('click', closeCardModal);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeCardModal();
+  });
+}
+
+function closeCardModal() {
+  const overlay = document.getElementById('card-modal');
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeCardModal();
+});
+
+// Podpięcie kliknięć do kafelków galerii
+document.querySelectorAll('#arcana-gallery .arcana-tile').forEach((tile, i) => {
+  const card = majorArcana[i];
+  tile.addEventListener('click', () => openCardModal(card.n));
+});
+
+// ============ SCROLL REVEAL ============
+(function initScrollReveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+  // Auto-mark sections and gallery tiles
+  document.querySelectorAll('.section').forEach(s => {
+    s.classList.add('reveal');
+    observer.observe(s);
+  });
+  document.querySelectorAll('.arcana-tile').forEach((tile, i) => {
+    tile.classList.add('reveal');
+    if (i % 4 === 1) tile.classList.add('delay-1');
+    else if (i % 4 === 2) tile.classList.add('delay-2');
+    else if (i % 4 === 3) tile.classList.add('delay-3');
+    observer.observe(tile);
+  });
+  document.querySelectorAll('.spread-card, .testi-card, .process-step, .faq-item').forEach((el, i) => {
+    el.classList.add('reveal');
+    if (i % 3 === 1) el.classList.add('delay-1');
+    else if (i % 3 === 2) el.classList.add('delay-2');
+    observer.observe(el);
+  });
+})();
+
+// ============ TILT 3D na kafelkach galerii ============
+document.querySelectorAll('.arcana-tile').forEach(tile => {
+  tile.addEventListener('mousemove', (e) => {
+    const rect = tile.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    const rotX = (y - 0.5) * -8;
+    const rotY = (x - 0.5) * 8;
+    tile.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-4px)`;
+  });
+  tile.addEventListener('mouseleave', () => {
+    tile.style.transform = '';
+  });
+});
+
+// Dodaj shine div do każdej arcana-tile
+document.querySelectorAll('.arcana-tile').forEach(tile => {
+  const shine = document.createElement('div');
+  shine.className = 'shine';
+  tile.appendChild(shine);
+});
 </script>
+
+<!-- Modal opisów kart -->
+<div class="modal-overlay" id="card-modal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true"></div>
+</div>
+
 </body>
 </html>
