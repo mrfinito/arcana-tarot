@@ -1043,11 +1043,116 @@ const ranks = [
   {n:'Król', up:'mistrzostwo, autorytet', rev:'tyrania, dystans'}
 ];
 
+// ============ Generator pięknych kart Małych Arkanów (SVG -> data URI) ============
+// Każda karta ma ciemny gradient, złotą podwójną ramkę, narysowany symbol koloru
+// i powtórzenia symbolu według rangi (jak w tradycyjnym Tarocie Marsylskim)
+
+const suitSymbolPaths = {
+  // Kielich — wysoki, elegancki
+  'Kielichy': '<path d="M -11 -13 L 11 -13 L 9 1 Q 9 9 0 9 Q -9 9 -9 1 Z M -3 9 L 3 9 L 3 15 L -3 15 Z M -7 15 L 7 15 L 7 17 L -7 17 Z" fill="#E8C547" stroke="#8B6914" stroke-width="0.6"/>',
+  // Pentakl — gwiazda pięcioramienna
+  'Pentakle': '<path d="M 0 -13 L 3.8 -4 L 13 -4 L 5.5 2.5 L 8.5 12 L 0 6.5 L -8.5 12 L -5.5 2.5 L -13 -4 L -3.8 -4 Z" fill="#E8C547" stroke="#8B6914" stroke-width="0.5"/>',
+  // Miecz — większy, z wyraźnym jelcem i głownią
+  'Miecze': '<g><path d="M -2 -15 L 2 -15 L 2 9 L -2 9 Z" fill="#E8C547"/><path d="M 0 -17 L 2 -15 L -2 -15 Z" fill="#E8C547"/><rect x="-7" y="9" width="14" height="2" rx="0.5" fill="#E8C547"/><rect x="-1.5" y="11" width="3" height="6" fill="#8B6914"/><circle cx="0" cy="18" r="2" fill="#E8C547"/></g>',
+  // Buława — drewniana laska z węzłami i zielonymi liśćmi
+  'Buławy': '<g><rect x="-2.5" y="-13" width="5" height="28" rx="1.5" fill="#E8C547"/><rect x="-3" y="-13" width="6" height="2" fill="#8B6914"/><rect x="-3" y="13" width="6" height="2" fill="#8B6914"/><circle cx="0" cy="-7" r="2.5" fill="#8B6914"/><circle cx="0" cy="0" r="2.5" fill="#8B6914"/><circle cx="0" cy="7" r="2.5" fill="#8B6914"/><path d="M -7 -16 Q -3 -19 0 -16 Q 3 -19 7 -16 L 5 -12 Q 0 -10 -5 -12 Z" fill="#E8C547" opacity="0.85"/></g>'
+};
+
+// Mapa rangi -> liczba symboli w centrum (jak w klasycznej talii)
+const rankCount = {
+  'As': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5, 'VI': 6, 'VII': 7,
+  'VIII': 8, 'IX': 9, 'X': 10,
+  'Paź': 0, 'Rycerz': 0, 'Królowa': 0, 'Król': 0  // figury — pojedyncza wielka emblema
+};
+
+const rankRoman = {
+  'As': 'I', 'II': 'II', 'III': 'III', 'IV': 'IV', 'V': 'V',
+  'VI': 'VI', 'VII': 'VII', 'VIII': 'VIII', 'IX': 'IX', 'X': 'X',
+  'Paź': 'P', 'Rycerz': 'R', 'Królowa': 'D', 'Król': 'K'
+};
+
+// Pozycje symboli w siatce dla każdej rangi (w obrębie 130×190 środka karty)
+function symbolPositions(n) {
+  if (n === 1) return [[0, 0]];
+  if (n === 2) return [[0, -30], [0, 30]];
+  if (n === 3) return [[0, -38], [0, 0], [0, 38]];
+  if (n === 4) return [[-22, -30], [22, -30], [-22, 30], [22, 30]];
+  if (n === 5) return [[-22, -30], [22, -30], [0, 0], [-22, 30], [22, 30]];
+  if (n === 6) return [[-22, -35], [22, -35], [-22, 0], [22, 0], [-22, 35], [22, 35]];
+  if (n === 7) return [[-22, -42], [22, -42], [0, -15], [-22, 8], [22, 8], [-22, 42], [22, 42]];
+  if (n === 8) return [[-22, -42], [22, -42], [-22, -14], [22, -14], [-22, 14], [22, 14], [-22, 42], [22, 42]];
+  if (n === 9) return [[-22, -45], [22, -45], [-22, -18], [22, -18], [0, 0], [-22, 18], [22, 18], [-22, 45], [22, 45]];
+  if (n === 10) return [[-22, -50], [22, -50], [-22, -25], [22, -25], [0, -10], [0, 10], [-22, 25], [22, 25], [-22, 50], [22, 50]];
+  return [];
+}
+
+function generateMinorCardSVG(rank, suit) {
+  const path = suitSymbolPaths[suit];
+  const n = rankCount[rank];
+  const roman = rankRoman[rank];
+  const positions = symbolPositions(n);
+
+  let symbols = '';
+  if (n > 0) {
+    positions.forEach(([x, y]) => {
+      symbols += `<g transform="translate(${100 + x}, ${175 + y}) scale(0.85)">${path}</g>`;
+    });
+  } else {
+    // Figura — duża pojedyncza emblema + ozdobniki w rogach
+    symbols += `<g transform="translate(100, 175) scale(3)">${path}</g>`;
+    // Ozdobniki w 4 rogach
+    [[40, 80], [160, 80], [40, 270], [160, 270]].forEach(([x, y]) => {
+      symbols += `<g transform="translate(${x}, ${y}) scale(0.5)" opacity="0.5">${path}</g>`;
+    });
+  }
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 350">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#221858"/>
+    <stop offset="50%" stop-color="#1A1340"/>
+    <stop offset="100%" stop-color="#0F0A2D"/>
+  </linearGradient>
+  <radialGradient id="glow" cx="0.5" cy="0.5" r="0.7">
+    <stop offset="0%" stop-color="#E8C547" stop-opacity="0.15"/>
+    <stop offset="100%" stop-color="#E8C547" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<rect width="200" height="350" fill="url(#bg)"/>
+<rect width="200" height="350" fill="url(#glow)"/>
+<rect x="6" y="6" width="188" height="338" fill="none" stroke="#E8C547" stroke-width="1.2" rx="4"/>
+<rect x="10" y="10" width="180" height="330" fill="none" stroke="#8B6914" stroke-width="0.5" rx="3"/>
+<!-- Roman top -->
+<text x="100" y="30" text-anchor="middle" fill="#E8C547" font-family="Cormorant Garamond, serif" font-size="20" font-weight="600" letter-spacing="2">${roman}</text>
+<line x1="40" y1="40" x2="160" y2="40" stroke="#8B6914" stroke-width="0.5" opacity="0.7"/>
+<!-- Symbols -->
+${symbols}
+<!-- Roman bottom (odwrócony) -->
+<line x1="40" y1="310" x2="160" y2="310" stroke="#8B6914" stroke-width="0.5" opacity="0.7"/>
+<text x="100" y="328" text-anchor="middle" fill="#E8C547" font-family="Cormorant Garamond, serif" font-size="20" font-weight="600" letter-spacing="2" transform="rotate(180 100 322)">${roman}</text>
+<!-- Stars (decor) -->
+<text x="20" y="25" fill="#E8C547" font-size="8" opacity="0.5">✦</text>
+<text x="180" y="25" fill="#E8C547" font-size="8" opacity="0.5">✦</text>
+<text x="20" y="335" fill="#E8C547" font-size="8" opacity="0.5">✦</text>
+<text x="180" y="335" fill="#E8C547" font-size="8" opacity="0.5">✦</text>
+</svg>`;
+
+  return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+}
+
 const minorArcana = [];
-suits.forEach(s => ranks.forEach(r => minorArcana.push({
-  name: r.n + ' ' + s.name, symbol: s.symbol, arcana: 'Małe Arkana',
-  up: r.up + ' (' + s.theme + ')', rev: r.rev, img: null, roman: null
-})));
+suits.forEach(s => ranks.forEach(r => {
+  const svgImg = generateMinorCardSVG(r.n, s.name);
+  minorArcana.push({
+    name: r.n + ' ' + s.name,
+    symbol: s.symbol,
+    arcana: 'Małe Arkana',
+    up: r.up + ' (' + s.theme + ')',
+    rev: r.rev,
+    img: svgImg,
+    roman: rankRoman[r.n]
+  });
+}));
 
 const majorFormatted = majorArcana.map(c => ({
   name: c.n + '. ' + c.name, symbol: c.symbol, arcana: 'Wielkie Arkana',
